@@ -42,7 +42,7 @@ def listar_notificaciones(usuario_id):
 
 @app.route('/')
 def index():
-    return "Microservicio de Notificaciones ConectaSalud "
+    return "Bienvenido al Microservicio de Notificaciones deConectaSalud"
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002)
