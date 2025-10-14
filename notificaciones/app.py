@@ -12,7 +12,7 @@ notificaciones = db["notificaciones"]
 def agregar_notificacion():
     data = request.get_json()
 
-    result = notificaciones.insert_one({
+    notificaciones.insert_one({
         "usuario_id": data.get("usuario_id"),
         "titulo": data.get("titulo"),
         "mensaje": data.get("mensaje"),
@@ -39,10 +39,6 @@ def listar_notificaciones(usuario_id):
         })
     return jsonify(resultado), 200
 
-
-@app.route('/')
-def index():
-    return "Bienvenido al Microservicio de Notificaciones deConectaSalud"
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002)
