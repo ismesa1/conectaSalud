@@ -120,6 +120,7 @@ return [
     */
 
     'key' => env('APP_KEY'),
+    'citas_service_url' => env('CITAS_SERVICE_URL'),
 
     'cipher' => 'AES-256-CBC',
 
