@@ -1,8 +1,7 @@
 from locust import HttpUser, task
 import random
 
-class HistorialCrudUser(HttpUser):
-
+class SimpleUser(HttpUser):
     @task
     def create_historia(self):
         paciente_id = f"paciente_{random.randint(1, 1000)}"
