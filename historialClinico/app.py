@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from datetime import datetime
+from bson.objectid import ObjectId #Se usa para manejar el id de las bases como Mongo
 
 app = Flask(__name__)
 
@@ -37,6 +38,24 @@ def obtener_historial_por_paciente(paciente_id):
             "notas": r.get("notas", "")
         })     
     return jsonify(resultado), 200
+
+@app.route('/api/historias/<historia_id>', methods=['PUT'])
+def actualizar_historia(historia_id):
+    data = request.get_json()
+    
+    historiales.update_one(
+        {"_id": ObjectId(historia_id)},
+        {"$set": data}
+    )
+
+    return jsonify({"mensaje": "Historial actualizado correctamente"}), 200
+
+
+@app.route('/api/historias/<historia_id>', methods=['DELETE'])
+def borrar_historia(historia_id):
+    historiales.delete_one({"_id": ObjectId(historia_id)})
+
+    return jsonify({"mensaje": "Historial borrado correctamente"}), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
