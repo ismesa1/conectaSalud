@@ -1,4 +1,3 @@
-// En el paquete controller
 package com.example.demo.controller;
 
 import com.example.demo.model.Appointment;
@@ -55,5 +54,10 @@ public class AppointmentController {
                     appointmentRepository.delete(appointment);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
+    }
+
+@GetMapping("/patient/{patientId}")
+    public List<Appointment> getAppointmentsByPatient(@PathVariable String patientId) {
+        return appointmentRepository.findByPatientId(patientId);
     }
 }
