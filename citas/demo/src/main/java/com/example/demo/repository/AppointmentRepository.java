@@ -1,6 +1,5 @@
 package com.example.demo.repository;
 
-// En el paquete repository
 import com.example.demo.model.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;

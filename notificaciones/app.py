@@ -4,7 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb://mongo:27017/")
 db = client["conectasalud"]
 notificaciones = db["notificaciones"]
 
@@ -41,4 +41,4 @@ def listar_notificaciones(usuario_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", debug=True, port=5000)
