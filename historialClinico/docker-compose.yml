@@ -1,0 +1,24 @@
+services:
+
+  historial_clinico:
+    build: .
+    container_name: historialClinico
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/conectasalud
+    ports:
+      - "5000:5000"
+
+  mongo:
+    image: mongo
+    container_name: mongo_historial
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

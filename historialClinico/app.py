@@ -2,10 +2,12 @@ from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from datetime import datetime
 from bson.objectid import ObjectId #Se usa para manejar el id de las bases como Mongo
+import os
 
 app = Flask(__name__)
 
-client = MongoClient("mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client["conectasalud"]
 historiales = db["historias"]
 
@@ -57,5 +59,5 @@ def borrar_historia(historia_id):
 
     return jsonify({"mensaje": "Historial borrado correctamente"}), 200
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", debug=True, port=5000)
