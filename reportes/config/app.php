@@ -120,7 +120,7 @@ return [
     */
 
     'key' => env('APP_KEY'),
-    'citas_service_url' => env('CITAS_SERVICE_URL'),
+    'citas_service_url' => env('CITAS_URL', 'http://spring_citas:8080'),
 
     'cipher' => 'AES-256-CBC',
 
