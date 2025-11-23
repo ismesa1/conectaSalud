@@ -6,5 +6,4 @@ use App\Http\Controllers\ReportController;
 
 Route::get('/reports/patient/{patientId}/excel', [ReportController::class, 'generatePatientAppointmentsExcel']);
 
-
-Route::get('/reports/patient/{patientId}/pdf', [ReportController::class, 'generatePatientAppointmentsPdf']);
+Route::get('/pdf-citas/{patientId}', [ReportController::class, 'generatePatientAppointmentsPdf']);

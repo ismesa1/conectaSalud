@@ -35,20 +35,27 @@ class ReportController extends Controller
     {
         try {
             $citasServiceUrl = config('app.citas_service_url');
+
             $response = Http::get("{$citasServiceUrl}/api/appointments/patient/{$patientId}");
 
             if ($response->failed()) {
                 return response()->json(['error' => 'No se pudo conectar al servicio de citas.'], 500);
             }
 
-            $appointments = $response->json();
+            $appointments = $response->json() ?? [];
 
-            $pdf = PDF::loadView('reports.appointments_pdf', ['appointments' => $appointments]);
+            $pdf = Pdf::loadView('reports.appointments_pdf', [
+                'appointments' => $appointments
+            ]);
 
-            return $pdf->download('reporte_citas.pdf');
+            return $pdf->download("reporte_citas_{$patientId}.pdf");
 
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Ocurrió un error inesperado.', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Ocurrió un error inesperado.',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
+
 }

@@ -1,0 +1,92 @@
+services:
+  # ============================================
+  # BASE DE DATOS PARA CITAS (MYSQL)
+  # ============================================
+  db_citas:
+    image: mysql:8.0
+    container_name: db_citas
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: citas_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - citas_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # ============================================
+  # MICROSERVICIO DE CITAS (SPRING BOOT)
+  # ============================================
+  spring_citas:
+    build:
+      context: ../citas/demo
+      dockerfile: Dockerfile
+    container_name: spring_citas
+    depends_on:
+      db_citas:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db_citas:3306/citas_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SERVER_ADDRESS: 0.0.0.0
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+
+  # ============================================
+  # BASE DE DATOS PARA REPORTES (MYSQL)
+  # ============================================
+  db_reportes:
+    image: mysql:8.0
+    container_name: db_reportes
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: reportes_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - reportes_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # ============================================
+  # MICROSERVICIO DE REPORTES (LARAVEL)
+  # ============================================
+  reportes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reportes
+    working_dir: /var/www/html
+    ports:
+      - "8003:9000"
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db_reportes
+      DB_PORT: 3306
+      DB_DATABASE: reportes_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      CITAS_URL: "http://spring_citas:8080"
+    depends_on:
+      db_reportes:
+        condition: service_healthy
+      spring_citas:
+        condition: service_started
+
+volumes:
+  citas_mysql_data:
+  reportes_mysql_data:
