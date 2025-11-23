@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GatewayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('gateway.auth')->group(function () {
+    
+    // Esta es la ruta "comodín" que captura todo.
+    // Ejemplo: /api/citas/appointments -> ApiGatewayController lo maneja
+    Route::any('/{service}/{path?}', [GatewayController::class, 'handleRequest'])
+        ->where('path', '.*');
+
 });
