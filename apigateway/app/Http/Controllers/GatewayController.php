@@ -55,23 +55,18 @@ class GatewayController extends Controller
     // ============================
     // Microservicio de Citas
     // ============================
-    public function getAppointments($patientId)
+public function getAppointments($patientId)
     {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->get("{$this->appointmentsUrl}/api/appointments/patient/{$patientId}");
-
-        return $response->json();
+        $response = Http::withHeaders(['X-API-KEY' => $this->apiKey])
+                        ->get("{$this->appointmentsUrl}/api/appointments/patient/{$patientId}");
+        return response()->json($response->json(), $response->status());
     }
 
     public function createAppointment(Request $request)
     {
-        $data = $request->all();
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->post("{$this->appointmentsUrl}/api/appointments", $data);
-
-        return $response->json();
+        $response = Http::withHeaders(['X-API-KEY' => $this->apiKey])
+                        ->post("{$this->appointmentsUrl}/api/appointments", $request->all());
+        return response()->json($response->json(), $response->status());
     }
 
     // ============================
@@ -157,7 +152,7 @@ public function sendNotification(Request $request)
         $data = $request->all();
         $response = Http::withHeaders([
             'X-API-Key' => $this->apiKey
-        ])->post("{$this->reportsUrl}/reports", $data);
+        ])->post("{$this->reportsUrl}/api/reports", $data);
 
         return $response->json();
     }
