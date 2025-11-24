@@ -120,7 +120,8 @@ return [
     */
 
     'key' => env('APP_KEY'),
-    'citas_service_url' => env('CITAS_URL', 'http://spring_citas:8080'),
+    'citas_service_url' => env('CITAS_SERVICE_URL'),
+    'api_key' => env('API_KEY'),
 
     'cipher' => 'AES-256-CBC',
 
@@ -230,6 +231,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
 
     ],
 

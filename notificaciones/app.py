@@ -4,9 +4,16 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-client = MongoClient("mongodb://mongo:27017/")
+client = MongoClient("mongodb://127.0.0.1:27017/")
 db = client["conectasalud"]
 notificaciones = db["notificaciones"]
+API_KEY = "ConectaSaludKey123"
+
+@app.before_request
+def verificar_api_key():
+    api_key = request.headers.get("X-API-Key")
+    if api_key != API_KEY:
+        return jsonify({"error": "Acceso no autorizado"}), 401
 
 @app.route('/api/notificaciones', methods=['POST'])
 def agregar_notificacion():
@@ -41,4 +48,4 @@ def listar_notificaciones(usuario_id):
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True, port=5000)
+    app.run(host="0.0.0.0", debug=True, port=5001)
