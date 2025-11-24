@@ -10,24 +10,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
-    protected $citasUrl;
-    protected $apiKey;
-
-    public function __construct()
-    {
-        $this->citasUrl = env('CITAS_SERVICE_URL');
-        $this->apiKey   = env('API_KEY');
-    }
-
-    /* ===========================================================
-       GENERAR EXCEL DE CITAS POR PACIENTE
-    ============================================================ */
-    public function generatePatientAppointmentsExcel(string $patientId)
+    /**
+     * Generar reporte Excel de citas de un paciente
+     */
+    public function generateAppointmentsExcel($patientId)
     {
         try {
+            $citasServiceUrl = config('app.citas_service_url');
+            $apiKey = config('app.api_key');
+
             $response = Http::withHeaders([
-                'X-API-Key' => $this->apiKey
-            ])->get("{$this->citasUrl}/api/appointments/patient/{$patientId}");
+                'X-API-Key' => $apiKey
+            ])->get("{$citasServiceUrl}/api/appointments/patient/{$patientId}");
 
             if ($response->failed()) {
                 return response()->json(['error' => 'No se pudo conectar al microservicio de Citas.'], 500);
@@ -39,21 +33,24 @@ class ReportController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error inesperado.',
+                'error' => 'Ocurrió un error inesperado.',
                 'message' => $e->getMessage()
             ], 500);
         }
     }
 
-    /* ===========================================================
-       GENERAR PDF DE CITAS POR PACIENTE
-    ============================================================ */
-    public function generatePatientAppointmentsPdf(string $patientId)
+    /**
+     * Generar PDF de citas de un paciente
+     */
+    public function generateAppointmentsPdf($patientId)
     {
         try {
+            $citasServiceUrl = config('app.citas_service_url');
+            $apiKey = config('app.api_key');
+
             $response = Http::withHeaders([
-                'X-API-Key' => $this->apiKey
-            ])->get("{$this->citasUrl}/api/appointments/patient/{$patientId}");
+                'X-API-Key' => $apiKey
+            ])->get("{$citasServiceUrl}/api/appointments/patient/{$patientId}");
 
             if ($response->failed()) {
                 return response()->json(['error' => 'No se pudo conectar al microservicio de Citas.'], 500);
@@ -68,8 +65,9 @@ class ReportController extends Controller
             return $pdf->download("reporte_citas_{$patientId}.pdf");
 
         } catch (\Exception $e) {
+
             return response()->json([
-                'error' => 'Error inesperado.',
+                'error' => 'Ocurrió un error inesperado.',
                 'message' => $e->getMessage()
             ], 500);
         }
