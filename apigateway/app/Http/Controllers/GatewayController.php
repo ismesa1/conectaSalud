@@ -118,24 +118,27 @@ public function deleteMedicalRecord($id) {
     // ============================
     // Microservicio de Notificaciones
     // ============================
-    public function getNotifications($userId)
-    {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->get("{$this->notificationsUrl}/notifications/{$userId}");
+    // Obtener notificaciones de un usuario
+public function getNotifications($userId)
+{
+    $response = Http::withHeaders([
+        'X-API-Key' => $this->apiKey
+    ])->get("{$this->notificationsUrl}/api/notificaciones/{$userId}");
 
-        return $response->json();
-    }
+    return response()->json($response->json(), $response->status());
+}
 
-    public function sendNotification(Request $request)
-    {
-        $data = $request->all();
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->post("{$this->notificationsUrl}/notifications", $data);
+// Enviar una notificación
+public function sendNotification(Request $request)
+{
+    $data = $request->all();
 
-        return $response->json();
-    }
+    $response = Http::withHeaders([
+        'X-API-Key' => $this->apiKey
+    ])->post("{$this->notificationsUrl}/api/notificaciones", $data);
+
+    return response()->json($response->json(), $response->status());
+}
 
     // ============================
     // Microservicio de Reportes
