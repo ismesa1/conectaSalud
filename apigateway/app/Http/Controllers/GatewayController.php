@@ -7,70 +7,155 @@ use Illuminate\Support\Facades\Http;
 
 class GatewayController extends Controller
 {
-    /**
-     * Método mágico para manejar todas las peticiones a los microservicios.
-     *
-     * @param Request $request La petición original del cliente.
-     * @param string $service El nombre del servicio (auth, citas, historias, etc.).
-     * @param string $path La ruta específica dentro del servicio (ej: login, create_user).
-     */
-    public function handleRequest(Request $request, $service, $path = '')
+    protected $authUrl;
+    protected $recordsUrl;
+    protected $appointmentsUrl;
+    protected $notificationsUrl;
+    protected $reportsUrl;
+    protected $apiKey;
+
+    public function __construct()
     {
-        $baseUrl = $this->getServiceUrl($service);
-
-        if (!$baseUrl) {
-            return response()->json(['error' => 'Microservicio no encontrado o no configurado.'], 404);
-        }
-
-        $url = rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
-
-        $queryString = $request->getQueryString();
-        if ($queryString) {
-            $url .= "?{$queryString}";
-        }
-
-        $method = $request->method();
-        
-        $data = $request->all();
-
-        $http = Http::withHeaders([
-            'X-Gateway-Key' => env('GATEWAY_API_KEY'),
-            'Accept' => 'application/json',
-        ]);
-
-        try {
-            $response = $http->send($method, $url, [
-                'json' => $data 
-            ]);
-
-            return response($response->body(), $response->status())
-                ->header('Content-Type', 'application/json');
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Error de conexión con el microservicio.',
-                'service' => $service,
-                'url' => $url,
-                'details' => $e->getMessage()
-            ], 502); 
-        }
+        $this->authUrl = env('AUTH_API_URL');
+        $this->recordsUrl = env('RECORDS_API_URL');
+        $this->appointmentsUrl = env('APPOINTMENTS_API_URL');
+        $this->notificationsUrl = env('NOTIFICATIONS_API_URL');
+        $this->reportsUrl = env('REPORTS_API_URL');
+        $this->apiKey = env('API_KEY');
     }
 
-    private function getServiceUrl($service)
+    // ============================
+    // Microservicio de Autenticacion
+    // ============================
+
+        // Registrar usuario
+    public function register(Request $request)
     {
-        switch ($service) {
-            case 'auth':
-                return env('MICROSERVICE_AUTH_URL');
-            case 'historias':
-                return env('MICROSERVICE_HISTORIAS_URL');
-            case 'notificaciones':
-                return env('MICROSERVICE_NOTIFICACIONES_URL');
-            case 'citas':
-                return env('MICROSERVICE_CITAS_URL');
-            case 'reportes':
-                return env('MICROSERVICE_REPORTES_URL');
-            default:
-                return null;
-        }
+        $data = $request->all();
+
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey  // si tu auth lo requiere
+        ])->post("{$this->authUrl}/api/create_user", $data);
+
+        return $response->json();
+    }
+
+    // Login
+    public function login(Request $request)
+    {
+        $data = $request->all();
+
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->post("{$this->authUrl}/api/login", $data);
+
+        return response()->json($response->json(), $response->status());
+    }
+
+    // ============================
+    // Microservicio de Citas
+    // ============================
+    public function getAppointments($patientId)
+    {
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->get("{$this->appointmentsUrl}/api/appointments/patient/{$patientId}");
+
+        return $response->json();
+    }
+
+    public function createAppointment(Request $request)
+    {
+        $data = $request->all();
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->post("{$this->appointmentsUrl}/api/appointments", $data);
+
+        return $response->json();
+    }
+
+    // ============================
+    // Microservicio de Historias Clínicas
+    // ============================
+        // Obtener todas las historias
+    public function getMedicalRecords() {
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->get("{$this->recordsUrl}/historias");
+
+        return $response->json();
+    }
+
+    // Crear una nueva historia
+    public function createMedicalRecord(Request $request) {
+        $data = $request->all();
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->post("{$this->recordsUrl}/historias", $data);
+
+        return $response->json();
+    }
+
+    // Actualizar historia
+    public function updateMedicalRecord(Request $request, $id) {
+        $data = $request->all();
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->put("{$this->recordsUrl}/historias/{$id}", $data);
+
+        return $response->json();
+    }
+
+    // Borrar historia
+    public function deleteMedicalRecord($id) {
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->delete("{$this->recordsUrl}/historias/{$id}");
+
+        return $response->json();
+    }
+
+    // ============================
+    // Microservicio de Notificaciones
+    // ============================
+    public function getNotifications($userId)
+    {
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->get("{$this->notificationsUrl}/notifications/{$userId}");
+
+        return $response->json();
+    }
+
+    public function sendNotification(Request $request)
+    {
+        $data = $request->all();
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->post("{$this->notificationsUrl}/notifications", $data);
+
+        return $response->json();
+    }
+
+    // ============================
+    // Microservicio de Reportes
+    // ============================
+    public function getReports()
+    {
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->get("{$this->reportsUrl}/reports");
+
+        return $response->json();
+    }
+
+    public function generateReport(Request $request)
+    {
+        $data = $request->all();
+        $response = Http::withHeaders([
+            'X-API-Key' => $this->apiKey
+        ])->post("{$this->reportsUrl}/reports", $data);
+
+        return $response->json();
     }
 }
