@@ -11,6 +11,14 @@ client = MongoClient(MONGO_URI)
 db = client["conectasalud"]
 historiales = db["historias"]
 
+API_KEY = os.getenv("API_KEY", "ConectaSaludKey123")
+
+def validar_api_key():
+    key = request.headers.get("X-API-Key")
+    if key != API_KEY:
+        return False
+    return True
+
 @app.route('/api/historias', methods=['POST'])
 def agregar_historia():
     data = request.get_json()

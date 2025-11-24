@@ -77,43 +77,43 @@ class GatewayController extends Controller
     // ============================
     // Microservicio de Historias Clínicas
     // ============================
-        // Obtener todas las historias
-    public function getMedicalRecords() {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->get("{$this->recordsUrl}/historias");
+// Obtener historias de un paciente
+public function getMedicalRecords($patientId) {
+    $response = Http::withHeaders([
+        'X-API-Key' => $this->apiKey
+    ])->get("{$this->recordsUrl}/api/historias/paciente/{$patientId}");
 
-        return $response->json();
-    }
+    return response()->json($response->json(), $response->status());
+}
 
-    // Crear una nueva historia
-    public function createMedicalRecord(Request $request) {
-        $data = $request->all();
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->post("{$this->recordsUrl}/historias", $data);
+// Crear una nueva historia
+public function createMedicalRecord(Request $request) {
+    $data = $request->all();
+    $response = Http::withHeaders([
+        'X-API-Key' => $this->apiKey
+    ])->post("{$this->recordsUrl}/api/historias", $data);
 
-        return $response->json();
-    }
+    return response()->json($response->json(), $response->status());
+}
 
-    // Actualizar historia
-    public function updateMedicalRecord(Request $request, $id) {
-        $data = $request->all();
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->put("{$this->recordsUrl}/historias/{$id}", $data);
+// Actualizar historia
+public function updateMedicalRecord(Request $request, $id) {
+    $data = $request->all();
+    $response = Http::withHeaders([
+        'X-API-Key' => $this->apiKey
+    ])->put("{$this->recordsUrl}/api/historias/{$id}", $data);
 
-        return $response->json();
-    }
+    return response()->json($response->json(), $response->status());
+}
 
-    // Borrar historia
-    public function deleteMedicalRecord($id) {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->apiKey
-        ])->delete("{$this->recordsUrl}/historias/{$id}");
+// Borrar historia
+public function deleteMedicalRecord($id) {
+    $response = Http::withHeaders([
+        'X-API-Key' => $this->apiKey
+    ])->delete("{$this->recordsUrl}/api/historias/{$id}");
 
-        return $response->json();
-    }
+    return response()->json($response->json(), $response->status());
+}
 
     // ============================
     // Microservicio de Notificaciones
