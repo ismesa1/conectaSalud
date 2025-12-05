@@ -4,23 +4,9 @@ services:
     container_name: apigateway
     ports:
       - "8000:8000"
-    volumes:
-      - .:/var/www/html
     environment:
-      MICROSERVICIO_API_URL: http://citas:8080
-      API_KEY: 123456
-    depends_on:
-      - citas
-      - reportes
-
-  citas:
-    image: tu_imagen_citas
-    container_name: citas
-    ports:
-      - "8081:8080"
-
-  reportes:
-    image: tu_imagen_reportes
-    container_name: reportes
-    ports:
-      - "8082:8000"
+      AUTENTICACION_URL: http://auth_service:8000
+      REPORTES_URL: http://reportes:9000
+      CITAS_URL: http://citas:8080
+      HISTORIAL_URL: http://historialClinico:5000
+      NOTIFICACIONES_URL: http://flask_service:5001
