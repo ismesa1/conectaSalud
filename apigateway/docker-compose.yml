@@ -5,8 +5,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      AUTENTICACION_URL: http://auth_service:8000
-      REPORTES_URL: http://reportes:9000
-      CITAS_URL: http://citas:8080
+      AUTENTICACION_URL: http://auth_nginx
+      REPORTES_URL: http://reportes
+      CITAS_URL: http://spring_citas:8080
       HISTORIAL_URL: http://historialClinico:5000
-      NOTIFICACIONES_URL: http://flask_service:5001
+      NOTIFICACIONES_URL: http://flask_service:5000
